@@ -1,180 +1,117 @@
--- PANEL COMPLETO Y ORDENADO
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Name = "ChrisPanelGUI"
 
-local screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-screenGui.Name = "CustomPanelUI"
-screenGui.ResetOnSpawn = false
+-- Ícono flotante
+local iconButton = Instance.new("ImageButton", ScreenGui)
+iconButton.Name = "OpenPanelButton"
+iconButton.Size = UDim2.new(0, 50, 0, 50)
+iconButton.Position = UDim2.new(0, 20, 0, 100)
+iconButton.BackgroundTransparency = 1
+iconButton.Image = "rbxassetid://17625889768"
 
-local panel = Instance.new("Frame", screenGui)
-panel.Size = UDim2.new(0, 300, 0, 350)
-panel.Position = UDim2.new(0, 100, 0, 160)
-panel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-panel.Active = true
-panel.Draggable = true
-panel.Visible = false
+-- Panel principal
+local mainPanel = Instance.new("Frame", ScreenGui)
+mainPanel.Size = UDim2.new(0, 500, 0, 300)
+mainPanel.Position = UDim2.new(0.5, -250, 0.5, -150)
+mainPanel.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainPanel.Visible = false
+mainPanel.Active = true
+mainPanel.Draggable = true
 
-local uicorner = Instance.new("UICorner", panel)
-uicorner.CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", mainPanel).CornerRadius = UDim.new(0, 10)
 
--- Toggle Panel al hacer clic en el icono
-local icon = game:GetService("CoreGui"):WaitForChild("FloatingIcon"):FindFirstChild("DraggableIcon")
-if icon then
-	icon.MouseButton1Click:Connect(function()
-		panel.Visible = not panel.Visible
-	end)
-end
-
--- Botones de secciones
-local buttonHolder = Instance.new("Frame", panel)
-buttonHolder.Size = UDim2.new(1, 0, 0, 40)
-buttonHolder.BackgroundTransparency = 1
-
-local layout = Instance.new("UIListLayout", buttonHolder)
-layout.FillDirection = Enum.FillDirection.Horizontal
-layout.Padding = UDim.new(0, 5)
-layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
-local sectionNames = {"Juegos Populares", "Comandos", "Utilidades", "Créditos"}
-local sections = {}
-
-for _, name in ipairs(sectionNames) do
-	local button = Instance.new("TextButton", buttonHolder)
-	button.Size = UDim2.new(0, 140, 1, -10)
-	button.Text = name
-	button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-	button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	button.Font = Enum.Font.GothamBold
-	button.TextSize = 14
-
-	local uiCorner = Instance.new("UICorner", button)
-	uiCorner.CornerRadius = UDim.new(0, 6)
-
-	local frame = Instance.new("Frame", panel)
-	frame.Size = UDim2.new(1, -20, 1, -60)
-	frame.Position = UDim2.new(0, 10, 0, 50)
-	frame.BackgroundTransparency = 1
-	frame.Visible = false
-
-	local list = Instance.new("UIListLayout", frame)
-	list.Padding = UDim.new(0, 5)
-	list.SortOrder = Enum.SortOrder.LayoutOrder
-
-	sections[name] = frame
-
-	button.MouseButton1Click:Connect(function()
-		for secName, secFrame in pairs(sections) do
-			secFrame.Visible = (secName == name) and not secFrame.Visible
-		end
-	end)
-end
-
--- Scripts en Juegos Populares
-local juegos = {
-	{"Fly Race", "loadstring(game:HttpGet('https://raw.githubusercontent.com/Christianxddd/flyrace/main/main.lua'))()"},
-	{"Skibi Toilet", "loadstring(game:HttpGet('https://raw.githubusercontent.com/Christianxddd/SKIB/main/main.lua'))()"},
-	{"Anime Punch", "loadstring(game:HttpGet('https://raw.githubusercontent.com/Christianxddd/animeee/main/main.lua'))()"},
-	{"Backrooms", "loadstring(game:HttpGet('https://raw.githubusercontent.com/Christianxddd/backroom/main/main.lua'))()"}
-}
-for _, data in ipairs(juegos) do
-	local b = Instance.new("TextButton", sections["Juegos Populares"])
-	b.Size = UDim2.new(1, -10, 0, 30)
-	b.Text = data[1]
-	b.TextColor3 = Color3.fromRGB(255, 255, 255)
-	b.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	b.Font = Enum.Font.Gotham
-	b.TextSize = 14
-	b.MouseButton1Click:Connect(function()
-		loadstring(data[2])()
-	end)
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
-end
-
--- Comandos
-local speed, jump = 16, 50
-
-local function createCommand(name, callback)
-	local btn = Instance.new("TextButton", sections["Comandos"])
-	btn.Size = UDim2.new(1, -10, 0, 30)
+-- Función para crear secciones
+local function createSection(name, pos)
+	local btn = Instance.new("TextButton", mainPanel)
+	btn.Size = UDim2.new(0, 240, 0, 40)
+	btn.Position = pos
 	btn.Text = name
+	btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	btn.Font = Enum.Font.Gotham
+	btn.Font = Enum.Font.GothamBold
 	btn.TextSize = 14
-	btn.MouseButton1Click:Connect(callback)
-	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-end
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
 
-createCommand("Velocidad +", function()
-	speed = speed + 5
-	player.Character.Humanoid.WalkSpeed = speed
-end)
-createCommand("Velocidad -", function()
-	speed = math.max(5, speed - 5)
-	player.Character.Humanoid.WalkSpeed = speed
-end)
-createCommand("Salto +", function()
-	jump = jump + 10
-	player.Character.Humanoid.JumpPower = jump
-end)
-createCommand("Salto -", function()
-	jump = math.max(10, jump - 10)
-	player.Character.Humanoid.JumpPower = jump
-end)
-createCommand("Activar ESP", function()
-	for _, plr in ipairs(Players:GetPlayers()) do
-		if plr ~= player and plr.Character then
-			local box = Instance.new("BoxHandleAdornment", plr.Character)
-			box.Size = Vector3.new(4, 5, 2)
-			box.Color3 = Color3.fromRGB(0, 255, 0)
-			box.Transparency = 0.5
-			box.Adornee = plr.Character:FindFirstChild("HumanoidRootPart")
-			box.AlwaysOnTop = true
-		end
-	end
-end)
-createCommand("Desactivar ESP", function()
-	for _, plr in ipairs(Players:GetPlayers()) do
-		if plr.Character then
-			for _, obj in ipairs(plr.Character:GetChildren()) do
-				if obj:IsA("BoxHandleAdornment") then
-					obj:Destroy()
-				end
+	local content = Instance.new("Frame", mainPanel)
+	content.Size = UDim2.new(1, -20, 1, -100)
+	content.Position = UDim2.new(0, 10, 0, 90)
+	content.BackgroundTransparency = 1
+	content.Visible = false
+
+	btn.MouseButton1Click:Connect(function()
+		for _, child in ipairs(mainPanel:GetChildren()) do
+			if child:IsA("Frame") and child ~= content then
+				child.Visible = false
 			end
 		end
-	end
-end)
-
--- Utilidades
-local utilBtn = Instance.new("TextButton", sections["Utilidades"])
-utilBtn.Size = UDim2.new(1, -10, 0, 30)
-utilBtn.Text = "Infinity Yield"
-utilBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-utilBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-utilBtn.Font = Enum.Font.Gotham
-utilBtn.TextSize = 14
-utilBtn.MouseButton1Click:Connect(function()
-	loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-end)
-Instance.new("UICorner", utilBtn).CornerRadius = UDim.new(0, 6)
-
--- Créditos
-local creditos = {
-	{"YouTube", "https://youtube.com/@gatogamer23"},
-	{"Discord", "https://discord.gg/TU-LINK"},
-	{"GitHub", "https://github.com/Christianxddd"}
-}
-
-for _, c in ipairs(creditos) do
-	local b = Instance.new("TextButton", sections["Créditos"])
-	b.Size = UDim2.new(1, -10, 0, 30)
-	b.Text = c[1]
-	b.TextColor3 = Color3.fromRGB(255, 255, 255)
-	b.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	b.Font = Enum.Font.Gotham
-	b.TextSize = 14
-	b.MouseButton1Click:Connect(function()
-		setclipboard(c[2])
+		content.Visible = not content.Visible
 	end)
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
+
+	return content
 end
+
+-- Crear secciones
+local comandos = createSection("Comandos", UDim2.new(0, 10, 0, 10))
+local juegos = createSection("Juegos Populares", UDim2.new(0, 250, 0, 10))
+local utilidades = createSection("Utilidades", UDim2.new(0, 10, 0, 60))
+local creditos = createSection("Créditos", UDim2.new(0, 250, 0, 60))
+
+-- Contenido: COMANDOS
+local velocidad = Instance.new("TextButton", comandos)
+velocidad.Size = UDim2.new(0, 180, 0, 30)
+velocidad.Position = UDim2.new(0, 0, 0, 0)
+velocidad.Text = "Velocidad x2"
+velocidad.MouseButton1Click:Connect(function()
+	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 32
+end)
+
+local salto = Instance.new("TextButton", comandos)
+salto.Size = UDim2.new(0, 180, 0, 30)
+salto.Position = UDim2.new(0, 0, 0, 40)
+salto.Text = "Salto x2"
+salto.MouseButton1Click:Connect(function()
+	game.Players.LocalPlayer.Character.Humanoid.JumpPower = 100
+end)
+
+-- Contenido: JUEGOS POPULARES
+local blox = Instance.new("TextButton", juegos)
+blox.Size = UDim2.new(0, 200, 0, 30)
+blox.Position = UDim2.new(0, 0, 0, 0)
+blox.Text = "Script Blox Fruits"
+blox.MouseButton1Click:Connect(function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Christianxddd/blox/main/blox.lua"))()
+end)
+
+-- Contenido: UTILIDADES
+local esp = Instance.new("TextButton", utilidades)
+esp.Size = UDim2.new(0, 180, 0, 30)
+esp.Position = UDim2.new(0, 0, 0, 0)
+esp.Text = "Activar ESP"
+esp.MouseButton1Click:Connect(function()
+	loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+end)
+
+-- Contenido: CRÉDITOS
+local yt = Instance.new("TextButton", creditos)
+yt.Size = UDim2.new(0, 180, 0, 30)
+yt.Position = UDim2.new(0, 0, 0, 0)
+yt.Text = "YouTube: Christianxdd"
+yt.MouseButton1Click:Connect(function()
+	setclipboard("https://youtube.com/@Christianxdd")
+end)
+
+local tiktok = Instance.new("TextButton", creditos)
+tiktok.Size = UDim2.new(0, 180, 0, 30)
+tiktok.Position = UDim2.new(0, 0, 0, 40)
+tiktok.Text = "TikTok: @christianxdd"
+tiktok.MouseButton1Click:Connect(function()
+	setclipboard("https://tiktok.com/@christianxdd")
+end)
+
+-- Alternar visibilidad del panel
+local panelVisible = false
+iconButton.MouseButton1Click:Connect(function()
+	panelVisible = not panelVisible
+	mainPanel.Visible = panelVisible
+end)
